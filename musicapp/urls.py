@@ -18,19 +18,19 @@ urlpatterns = [
     # Danh sách bài hát yêu thích
     path("favorite/", views.favorite_list, name="favorite_list"),
 
-# urls.py
-path(
-    "playlist/add-to-user/<int:track_id>/<int:playlist_id>/",
-    views.add_to_playlist,
-    name="add_to_playlist"
-),
+    # Thêm vào playlist
+    path("playlist/add-to-user/<int:track_id>/<int:playlist_id>/",
+         views.add_to_playlist,
+         name="add_to_playlist"),
 
     # Danh sách playlist của người dùng
     path("playlist/", views.playlist_list, name="playlist_list"),
 
     # AI chat gợi ý
     path("chat-ai/", views.chat_ai, name="chat_ai"),
-path("upgrade/", views.upgrade_page, name="upgrade_page"),                  # Trang điều khoản + chọn gói
-    path("upgrade/start/", views.start_payment, name="start_payment"),          # Chọn phương thức thanh toán
-    path("upgrade/confirm/", views.confirm_payment, name="confirm_payment"),    # Xác nhận thanh toán (mock)
+
+    # Trang nâng cấp
+    path("upgrade/", views.upgrade_page, name="upgrade_page"),
+    path("upgrade/start/", views.start_payment, name="start_payment"),
+    path("upgrade/confirm/", views.confirm_payment, name="confirm_payment"),
 ]
