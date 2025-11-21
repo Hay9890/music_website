@@ -34,12 +34,13 @@ ALLOWED_HOSTS = ['*']
 DATABASES = {
     'default': {
         'ENGINE': 'djongo',
-        'NAME': 'music_db',           # tên database MongoDB bạn muốn dùng
+        'NAME': 'music_db',
         'CLIENT': {
-            'host': 'mongodb://localhost:27017',  # địa chỉ MongoDB
+            'host': 'mongodb+srv://music_db:Truong%4012345@cluster0.yxpjcs1.mongodb.net',
         }
     }
 }
+
 
 
 INSTALLED_APPS = [
