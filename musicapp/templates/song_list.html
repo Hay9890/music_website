@@ -10,7 +10,11 @@
         {% if song.cover_image %}
           <img src="{{ song.cover_image.url }}" class="card-img-top" style="height:200px; object-fit:cover;">
         {% else %}
+<<<<<<< HEAD
           <img src="/music_web/media/default_cover.jpg" class="card-img-top" style="height:200px; object-fit:cover;">
+=======
+          <img src="/media/default_cover.jpg" class="card-img-top" style="height:200px; object-fit:cover;">
+>>>>>>> ea517f31d8db99d64a150fa0664ea3eb71c2c436
         {% endif %}
         <div class="card-body text-center">
           <h5 class="card-title">{{ song.title }}</h5>
