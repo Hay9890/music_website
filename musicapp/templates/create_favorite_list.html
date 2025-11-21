@@ -1,0 +1,12 @@
+{% extends 'musicapp/base.html' %}
+{% block content %}
+<h2>Tạo danh sách yêu thích mới</h2>
+<form method="post" class="mt-3">
+  {% csrf_token %}
+  <div class="mb-3">
+    {{ form.name.label_tag }}
+    {{ form.name }}
+  </div>
+  <button class="btn btn-primary">Tạo danh sách</button>
+</form>
+{% endblock %}

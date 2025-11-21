@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}My Playlists - Django Music App{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <h2>🎵 My Playlists</h2>
+
+    {% if playlists %}
+        {% for playlist in playlists %}
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">{{ playlist.name }}</h5>
+                    <span class="badge bg-primary rounded-pill">{{ playlist.songs.count }} bài hát</span>
+                </div>
+                {% if playlist.songs.exists %}
+                    <ul class="list-group list-group-flush">
+                        {% for song in playlist.songs.all %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    {{ song.title }} - {{ song.artist.name|default:song.artist }}
+                                </div>
+                                {% if song.audio_file %}
+                                    <audio controls class="ms-3">
+                                        <source src="{{ song.audio_file.url }}" type="audio/mpeg">
+                                        Trình duyệt của bạn không hỗ trợ phát nhạc.
+                                    </audio>
+                                {% endif %}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <div class="card-body">
+                        <p>Playlist này chưa có bài hát nào.</p>
+                    </div>
+                {% endif %}
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>Bạn chưa có playlist nào. Hãy tạo một playlist mới khi nghe nhạc!</p>
+    {% endif %}
+</div>
+{% endblock %}
