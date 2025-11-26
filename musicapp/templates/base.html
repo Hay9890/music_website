@@ -1,96 +1,210 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{% block title %}Music App{% endblock %}</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}Django Music App{% endblock %}</title>
 
-  <!-- Bootstrap CSS -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <!-- Font Awesome for icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet" />
 
-  <style>
-    body {
-      background-color: #121212;
-      color: #e0e0e0;
-      font-family: "Inter", sans-serif;
-    }
-    .card {
-      background-color: #1e1e1e;
-      border-radius: 15px;
-      transition: transform 0.3s;
-    }
-    .card:hover { transform: translateY(-5px); }
-    .btn { border-radius: 8px; }
-  </style>
-</head>
-<body>
-  <!-- Navbar -->
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <div class="container-fluid">
-      <a class="navbar-brand" href="{% url 'home' %}">MusicSite</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav ms-auto">
-          {% if user.is_authenticated %}
+
+
+    <style>
+      :root {
+        --bg-color: #121212;
+        --card-color: #1e1e1e;
+        --text-color: #e0e0e0;
+        --accent: #00d4ff;
+        --accent-hover: #00aaff;
+        --secondary-accent: #ff4081;
+      }
+
+      body {
+        background: linear-gradient(135deg, var(--bg-color) 0%, #1a1a1a 100%);
+        color: var(--text-color);
+        font-family: "Inter", sans-serif;
+        animation: fadeIn 0.8s ease-in-out;
+      }
+
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+
+      /* Navbar */
+      .navbar {
+        background: linear-gradient(to right, #181818, #252525) !important;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        padding: 1rem 2rem;
+      }
+
+      .navbar-brand {
+        color: var(--accent) !important;
+        text-shadow: 0 0 10px rgba(0, 212, 255, 0.4);
+        font-weight: 700;
+        letter-spacing: 1.2px;
+        transition: all 0.3s ease;
+      }
+      .navbar-brand:hover {
+        color: var(--accent-hover) !important;
+        transform: scale(1.05);
+        text-shadow: 0 0 15px rgba(0, 212, 255, 0.7);
+      }
+
+      /* NAV LINK HOVER */
+      .nav-link {
+        color: var(--text-color) !important;
+        padding: 0.5rem 1rem;
+        position: relative;
+        transition: all 0.3s ease;
+      }
+
+      .nav-link:hover {
+        color: var(--accent) !important;
+        transform: translateY(-3px);
+        text-shadow: 0 0 8px rgba(0, 212, 255, 0.5);
+      }
+
+      .nav-link::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 0;
+        height: 2px;
+        background-color: var(--accent);
+        transition: width 0.3s ease;
+      }
+
+      .nav-link:hover::after {
+        width: 100%;
+      }
+
+      /* PREMIUM BUTTON */
+      .premium-btn {
+        color: var(--secondary-accent) !important;
+        font-weight: 600;
+        transition: all 0.3s ease;
+      }
+
+      .premium-btn:hover {
+        color: #ff6fa5 !important;
+        transform: translateY(-3px);
+        text-shadow: 0 0 10px rgba(255, 64, 129, 0.6);
+      }
+
+      /* DROPDOWN */
+      .dropdown-menu {
+        background-color: #1e1e1e;
+        border: 1px solid #333;
+        animation: fadeIn 0.3s ease-in-out;
+      }
+
+      .dropdown-item {
+        color: #e0e0e0;
+        transition: all 0.25s ease;
+      }
+
+      .dropdown-item:hover {
+        background-color: #222;
+        color: var(--accent);
+        transform: translateX(5px);
+        text-shadow: 0 0 8px rgba(0, 212, 255, 0.5);
+      }
+
+      /* Card hover effect */
+      .card {
+        background-color: var(--card-color);
+        border-radius: 15px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        transition: all 0.3s ease;
+      }
+
+      .card:hover {
+        transform: translateY(-8px) scale(1.02);
+        box-shadow: 0 8px 25px rgba(0, 191, 255, 0.4);
+      }
+
+    </style>
+  </head>
+
+  <body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="{% url 'home' %}">
+          <i class="fas fa-music me-2"></i>MusicSite
+        </a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+          <ul class="navbar-nav">
+
+            {% if user.is_authenticated %}
             <li class="nav-item"><span class="nav-link">Hi, {{ user.username }}</span></li>
 
-            <!-- Favorite Link -->
+            <!-- Favorite -->
             <li class="nav-item">
               <a class="nav-link" href="{% url 'favorite_list' %}">❤️ Yêu thích</a>
             </li>
-            {% if not sub or not sub.is_active %}
-                <li class="nav-item">
-                  <a href="{% url 'upgrade_page' %}" class="premium-btn">💎 Nâng cấp Premium</a>
-                </li>
-              {% endif %}
 
-            <!-- Playlist Dropdown -->
+            <!-- Premium -->
+            {% if not sub or not sub.is_active %}
+            <li class="nav-item">
+              <a class="nav-link premium-btn" href="{% url 'upgrade_page' %}">💎 Nâng cấp Premium</a>
+            </li>
+            {% endif %}
+
+            <!-- Playlist -->
             <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                🎵 Playlists
-              </a>
-                 <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="{% url 'playlist_list' %}">Xem tất cả playlist</a></li>
-        </ul>
+              <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">🎵 Playlist</a>
+
               <ul class="dropdown-menu dropdown-menu-dark">
+                <li><a class="dropdown-item" href="{% url 'playlist_list' %}">Xem tất cả playlist</a></li>
+                <li><hr class="dropdown-divider"></li>
+
                 {% for playlist in user.playlist_set.all %}
                   {% with first_song=playlist.songs.first %}
                     <li>
                       {% if first_song %}
-                        <a class="dropdown-item" href="{% url 'play_track' first_song.id %}">
-                          {{ playlist.name }}
-                        </a>
+                      <a class="dropdown-item" href="{% url 'play_track' first_song.id %}">
+                        {{ playlist.name }}
+                      </a>
                       {% else %}
-                        <span class="dropdown-item disabled">{{ playlist.name }} (trống)</span>
+                      <span class="dropdown-item disabled">{{ playlist.name }} (trống)</span>
                       {% endif %}
                     </li>
                   {% endwith %}
                 {% empty %}
-                  <li><span class="dropdown-item">Chưa có playlist</span></li>
+                <li><span class="dropdown-item">Chưa có playlist</span></li>
                 {% endfor %}
               </ul>
             </li>
 
             <li class="nav-item"><a class="nav-link" href="{% url 'logout' %}">Logout</a></li>
-          {% else %}
+
+            {% else %}
             <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">Login</a></li>
             <li class="nav-item"><a class="nav-link" href="{% url 'register' %}">Register</a></li>
-          {% endif %}
-        </ul>
+            {% endif %}
+          </ul>
+        </div>
       </div>
+    </nav>
+
+    <div class="container mt-4 mb-5">
+      {% block content %}{% endblock %}
     </div>
-  </nav>
 
-  <!-- Main Content -->
-  <div class="container mt-4 mb-5">
-    {% block content %}
-    {% endblock %}
-  </div>
-
-  <!-- Bootstrap JS -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-</body>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
 </html>

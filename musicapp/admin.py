@@ -1,30 +1,38 @@
 from django.contrib import admin
-from .models import Song, Artist, Favorite, PlayList
+from .models import Song, Artist, Favorite, Playlist
 
-# Đăng ký Artist
+# =========================
+# ARTIST
+# =========================
 @admin.register(Artist)
 class ArtistAdmin(admin.ModelAdmin):
     list_display = ('name', 'country')
     search_fields = ('name',)
 
-# Đăng ký Song
+# =========================
+# SONG
+# =========================
 @admin.register(Song)
 class SongAdmin(admin.ModelAdmin):
     list_display = ('title', 'artist', 'genre', 'release_date')
     search_fields = ('title', 'artist__name')
     list_filter = ('genre', 'release_date')
 
-# Đăng ký Favorite
+# =========================
+# FAVORITE
+# =========================
 @admin.register(Favorite)
 class FavoriteAdmin(admin.ModelAdmin):
     list_display = ('user', 'song', 'added_at')
     search_fields = ('user__username', 'song__title')
     list_filter = ('added_at',)
 
-# Đăng ký PlayList
-@admin.register(PlayList)
-class PlayListAdmin(admin.ModelAdmin):
+# =========================
+# PLAYLIST
+# =========================
+@admin.register(Playlist)
+class PlaylistAdmin(admin.ModelAdmin):
     list_display = ('name', 'user', 'created_at')
     search_fields = ('name', 'user__username')
-    filter_horizontal = ('songs',)  # Cho phép chọn nhiều song dễ dàng
+    # Không dùng filter_horizontal vì songs là JSONField
     list_filter = ('created_at',)

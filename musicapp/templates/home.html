@@ -6,167 +6,273 @@
 
 <style>
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* 3 nút action trên cùng 1 hàng */
+.song-action-btn {
+  background-color: #fff3cd !important; /* màu vàng nhạt */
+  color: #856404 !important;
+  border: 1px solid #ffeeba !important;
+  padding: 5px 10px !important;
+  font-size: 12px !important;
+  border-radius: 6px;
+  transition: 0.2s all;
+  min-width: 80px;
+  text-decoration: none !important;
+  cursor: pointer;
+}
+.song-action-btn:hover {
+  background-color: #ffe8a1 !important;
+  color: #000 !important;
+  transform: scale(1.08);
+  box-shadow: 0 4px 12px rgba(255,193,7,0.4);
+}
+.song-action-btn:active {
+  transform: scale(0.95);
+  box-shadow: 0 2px 6px rgba(255,193,7,0.3);
+}
+
+/* card shadow + hover, thu nhỏ và có chiều sâu */
+.song-card {
+  width: 100%;
+  max-width: 300px;
+  margin: auto;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.5) !important;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border-radius: 12px;
+  overflow: hidden;
+  background-color: #1e1e1e;
+}
+.song-card:hover {
+  transform: translateY(-8px) scale(1.03);
+  box-shadow: 0 16px 36px rgba(0,191,255,0.6) !important;
+}
+
+/* cover/avatar */
+.song-card img {
+  height: 160px;
+  width: 100%;
+  object-fit: cover;
+  border-radius: 12px 12px 0 0;
+}
+
+/* wrapper bao quanh các card */
+.songs-wrapper {
+  background-color: #222;  /* nền tối hơn xíu */
+  border-radius: 16px;
+  box-shadow: 0 0 30px rgba(255,255,255,0.2); /* shadow trắng nhẹ */
+  padding: 20px;
+  transition: 0.3s all;
+}
+.songs-wrapper:hover {
+  box-shadow: 0 0 40px rgba(255,255,255,0.35);
+  transform: translateY(-4px);
+}
+
+/* input tìm kiếm */
+.search-btn {
+  background-color: #fff3cd !important; /* màu vàng nhạt sáng */
+  color: #856404 !important;
+  border: 1px solid #ffeeba !important;
+  transition: 0.2s all;
+}
+.search-btn:hover {
+  background-color: #ffe8a1 !important;
+  box-shadow: 0 4px 12px rgba(255,193,7,0.4);
+}
+.search-btn:active {
+  transform: scale(0.95);
+  box-shadow: 0 2px 6px rgba(255,193,7,0.3);
+}
+
+/* Tên bài hát màu vàng nhạt, shadow trắng rõ hơn */
+.card-title {
+  color: #ffea7f; /* vàng nhạt */
+  text-shadow: 1px 1px 4px rgba(255,255,255,0.7); /* shadow trắng rõ */
+  font-weight: 600;
 }
 </style>
 
 <!-- FORM TÌM KIẾM -->
-<form method="get" action="{% url 'home' %}" class="d-flex justify-content-center mb-2">
+<form method="get" action="{% url 'home' %}" class="d-flex justify-content-center mb-3">
   <input type="text"
          name="q"
          value="{{ query }}"
-         class="form-control w-50 bg-dark text-light border-secondary"
+         class="form-control w-50 bg-dark text-light border-secondary rounded"
          placeholder="Tìm bài hát hoặc nghệ sĩ...">
-  <button type="submit" class="btn btn-primary ms-2">Tìm</button>
+  <button type="submit" class="song-action-btn search-btn ms-2">Tìm</button>
 </form>
 
 <!-- DANH MỤC THỂ LOẠI -->
 <ul class="nav nav-pills justify-content-center mb-4">
   {% for genre in genres %}
     <li class="nav-item">
-      <a class="nav-link {% if selected_genre|lower == genre|lower %}active{% endif %}"
-         href="?genre={{ genre|urlencode }}{% if query %}&q={{ query|urlencode }}{% endif %}">
-        {{ genre }}
-      </a>
+      <a class="nav-link {% if selected_genre|lower == genre|lower %}active{% endif %} rounded-pill"
+         href="?genre={{ genre|urlencode }}{% if query %}&q={{ query|urlencode }}{% endif %}">{{ genre }}</a>
     </li>
   {% endfor %}
 </ul>
 
-<!-- LƯỚI NHẠC -->
-<div class="row row-cols-1 row-cols-md-3 g-4">
-  {% for song in songs %}
-    <div class="col">
-      <div class="card h-100 shadow-sm text-bg-dark" style="animation: fadeIn 0.5s ease-in-out;">
-        {% if song.cover_image %}
-          <img src="{{ song.cover_image.url }}" class="card-img-top" alt="{{ song.title }}" style="height: 200px; object-fit: cover;">
-        {% else %}
-          <img src="{% static 'default_cover.jpg' %}" class="card-img-top" alt="No cover" style="height: 200px; object-fit: cover;">
-        {% endif %}
-
-        <div class="card-body text-center">
-          <h5 class="card-title text-light">{{ song.title }}</h5>
-          <p class="card-text text-muted">{{ song.artist.name|default:song.artist }}</p>
-
-          {% if song.audio_file %}
-            <audio controls class="mt-3 w-100">
-              <source src="{{ song.audio_file.url }}" type="audio/mpeg">
-              Trình duyệt của bạn không hỗ trợ phát nhạc.
-            </audio>
+<!-- WRAPPER BÓNG VÀ BO GÓC CHO CÁC CARD NHẠC -->
+<div class="songs-wrapper mb-4">
+  <div class="row row-cols-1 row-cols-md-3 g-4">
+    {% for song in songs %}
+      <div class="col">
+        <div class="card text-bg-dark song-card" style="animation: fadeIn 0.5s ease-in-out;">
+          {% if song.cover_image %}
+            <img src="{{ song.cover_image.url }}" class="card-img-top rounded-top" alt="{{ song.title }}">
+          {% else %}
+            <img src="{% static 'default_cover.jpg' %}" class="card-img-top rounded-top" alt="No cover">
           {% endif %}
 
-          <div class="d-flex justify-content-center mt-3">
+          <div class="card-body text-center">
+            <h5 class="card-title">{{ song.title }}</h5>
+            <p class="card-text text-muted">{{ song.artist.name|default:song.artist }}</p>
 
-            {% if user.is_authenticated %}
-              <button class="btn btn-sm me-2 {% if song.id in favorite_song_ids %}btn-danger{% else %}btn-success{% endif %} favorite-btn"
-                      data-song-id="{{ song.id }}">
-                {% if song.id in favorite_song_ids %}💔 Bỏ yêu thích{% else %}❤️ Thêm yêu thích{% endif %}
-              </button>
+            {% if song.audio_file %}
+              <audio controls class="mt-3 w-100">
+                <source src="{{ song.audio_file.url }}" type="audio/mpeg">
+                Trình duyệt của bạn không hỗ trợ phát nhạc.
+              </audio>
             {% endif %}
 
-            <a href="{% url 'play_track' song.id %}" class="btn btn-outline-light btn-sm">Nghe đầy đủ</a>
+            <!-- 3 nút Playlist, Favorite, Nghe đầy đủ cùng hàng -->
+            <div class="d-flex justify-content-center mt-3 gap-2 flex-wrap">
+              {% if user.is_authenticated %}
+                <button class="song-action-btn add-playlist-btn" data-song-id="{{ song.id }}">+ Playlist</button>
 
+                <button class="song-action-btn favorite-btn" data-song-id="{{ song.id }}">
+                  {% if song.id in favorite_song_ids %}💔 Bỏ yêu thích{% else %}❤️ Thêm yêu thích{% endif %}
+                </button>
+              {% endif %}
+
+              <a href="{% url 'play_track' song.id %}" class="song-action-btn">Nghe đầy đủ</a>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  {% empty %}
-    <p class="text-center text-muted">Chưa có bài hát nào để hiển thị.</p>
-  {% endfor %}
+    {% empty %}
+      <p class="text-center text-muted">Chưa có bài hát nào để hiển thị.</p>
+    {% endfor %}
+  </div>
 </div>
 
-<!-- Floating AI Chat Button -->
-<button id="floatingAI" style="
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    z-index: 1000;
-    border-radius: 50%;
-    width: 60px;
-    height: 60px;
-    font-size: 24px;
-    background-color: #0d6efd;
-    color: white;
-    border: none;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
-    cursor: pointer;
-">🎵</button>
+<!-- Modal playlist -->
+<div class="modal fade" id="playlistModal" tabindex="-1" aria-labelledby="playlistModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content bg-dark text-light rounded-4">
+      <div class="modal-header">
+        <h5 class="modal-title" id="playlistModalLabel">Thêm vào playlist</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>Chọn playlist có sẵn:</p>
+        <select id="existingPlaylist" class="form-select mb-3 rounded">
+          <option value="">-- Chọn playlist --</option>
+          {% for pl in user_playlists %}
+            <option value="{{ pl.id }}">{{ pl.name }}</option>
+          {% endfor %}
+        </select>
 
-<!-- AI Chat Box (ẩn mặc định) -->
-<div id="aiChatBox" style="
-    display: none;
-    position: fixed;
-    bottom: 90px;
-    right: 20px;
-    width: 300px;
-    max-width: 90%;
-    background-color: #212529;
-    color: white;
-    border-radius: 10px;
-    padding: 15px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.5);
-    z-index: 1000;
-">
+        <hr class="bg-light">
+
+        <p>Hoặc tạo playlist mới:</p>
+        <input type="text" class="form-control rounded" id="newPlaylistName" placeholder="Tên playlist mới..." />
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary rounded" data-bs-dismiss="modal">Hủy</button>
+        <button type="button" class="btn btn-primary rounded" id="confirmAddToPlaylist">Thêm</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Floating button -->
+<button id="floatingAI" class="btn btn-primary rounded-circle shadow-lg" style="position: fixed; bottom: 20px; right: 20px; width: 60px; height: 60px; font-size: 24px;">🎵</button>
+
+<div id="aiChatBox" class="p-3 rounded shadow-lg" style="display: none; position: fixed; bottom: 90px; right: 20px; width: 300px; background-color: #212529; color: white;">
   <h5>Gợi ý bài hát theo tâm trạng</h5>
-  <input type="text" id="moodInputFloating" class="form-control mb-2" placeholder="Tôi đang vui / buồn / mệt...">
-  <button class="btn btn-primary w-100 mb-2" id="moodBtnFloating">Gợi ý</button>
+  <input type="text" id="moodInputFloating" class="form-control mb-2 rounded" placeholder="Tôi đang vui / buồn / mệt...">
+  <button class="btn btn-primary w-100 mb-2 rounded" id="moodBtnFloating">Gợi ý</button>
   <div id="moodReplyFloating"></div>
 </div>
 
-<!-- JS AJAX -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
   const csrfToken = '{{ csrf_token }}';
 
-  // Toggle favorite
   document.querySelectorAll('.favorite-btn').forEach(btn => {
     btn.addEventListener('click', function() {
       const songId = btn.dataset.songId;
       fetch('{% url "add_favorite" %}', {
         method: 'POST',
-        headers: {
-          'X-CSRFToken': csrfToken,
-          'X-Requested-With': 'XMLHttpRequest',
-        },
-        body: new URLSearchParams({ song: songId })
+        headers: {'X-CSRFToken': csrfToken, 'X-Requested-With': 'XMLHttpRequest'},
+        body: new URLSearchParams({song: songId})
       })
-      .then(res => res.json())
-      .then(data => {
-        if (data.success) {
-          if (data.is_favorite) {
-            btn.classList.remove('btn-success');
-            btn.classList.add('btn-danger');
+      .then(res=>res.json())
+      .then(data=>{
+        if(data.success){
+          if(data.is_favorite){
             btn.textContent = '💔 Bỏ yêu thích';
           } else {
-            btn.classList.remove('btn-danger');
-            btn.classList.add('btn-success');
             btn.textContent = '❤️ Thêm yêu thích';
           }
         }
-      })
-      .catch(err => console.error(err));
+      }).catch(console.error);
     });
   });
 
-  // Floating AI chat logic
+  let selectedSongId = null;
+  const playlistModal = new bootstrap.Modal(document.getElementById('playlistModal'));
+
+  document.querySelectorAll('.add-playlist-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      selectedSongId = btn.dataset.songId;
+      document.getElementById('newPlaylistName').value='';
+      document.getElementById('existingPlaylist').value='';
+      playlistModal.show();
+    });
+  });
+
+  document.getElementById('confirmAddToPlaylist').addEventListener('click', function() {
+    const newName = document.getElementById('newPlaylistName').value.trim();
+    const existingId = document.getElementById('existingPlaylist').value;
+
+    if(!newName && !existingId){ return alert('Vui lòng chọn hoặc nhập tên playlist!'); }
+
+    let url = '/playlist/create-and-add/';
+    let payload = { song: selectedSongId };
+    if(newName) payload.name = newName;
+    if(existingId) payload.playlist_id = existingId;
+
+    fetch(url, {
+      method:'POST',
+      headers:{'X-CSRFToken':csrfToken,'X-Requested-With':'XMLHttpRequest','Content-Type':'application/json'},
+      body: JSON.stringify(payload)
+    }).then(res=>res.json()).then(data=>{
+      if(data.success){
+        alert(data.message||'Thành công!');
+        playlistModal.hide();
+        window.location.href="{% url 'playlist_list' %}";
+      } else alert(data.message||'Lỗi');
+    }).catch(console.error);
+  });
+
   const floatingBtn = document.getElementById('floatingAI');
   const chatBox = document.getElementById('aiChatBox');
-
   floatingBtn.addEventListener('click', () => {
     chatBox.style.display = chatBox.style.display === 'none' ? 'block' : 'none';
   });
 
-  const moodBtn = document.getElementById('moodBtnFloating');
-  moodBtn.addEventListener('click', function() {
+  document.getElementById('moodBtnFloating').addEventListener('click', function() {
     const mood = document.getElementById('moodInputFloating').value.trim();
     if(!mood) return;
-
     fetch(`/chat-ai/?mood=${encodeURIComponent(mood)}`)
       .then(res => res.json())
-      .then(data => {
-        document.getElementById('moodReplyFloating').textContent = data.reply;
-      })
-      .catch(err => console.error(err));
+      .then(data => { document.getElementById('moodReplyFloating').textContent = data.reply; })
+      .catch(console.error);
   });
 });
 </script>

@@ -1,42 +1,118 @@
 {% extends "base.html" %}
-{% block title %}My Playlists - Django Music App{% endblock %}
+{% load static %}
+{% block title %}Playlist - Django Music App{% endblock %}
 
 {% block content %}
-<div class="container py-4">
-    <h2>🎵 My Playlists</h2>
+<div class="container my-5">
 
-    {% if playlists %}
-        {% for playlist in playlists %}
-            <div class="card mb-4">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">{{ playlist.name }}</h5>
-                    <span class="badge bg-primary rounded-pill">{{ playlist.songs.count }} bài hát</span>
-                </div>
-                {% if playlist.songs.exists %}
-                    <ul class="list-group list-group-flush">
-                        {% for song in playlist.songs.all %}
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <div>
-                                    {{ song.title }} - {{ song.artist.name|default:song.artist }}
-                                </div>
-                                {% if song.audio_file %}
-                                    <audio controls class="ms-3">
-                                        <source src="{{ song.audio_file.url }}" type="audio/mpeg">
-                                        Trình duyệt của bạn không hỗ trợ phát nhạc.
-                                    </audio>
-                                {% endif %}
-                            </li>
-                        {% endfor %}
-                    </ul>
+  <div class="mb-4">
+    <a href="{% url 'home' %}" class="btn btn-outline-light">&larr; Quay về trang chủ</a>
+  </div>
+
+  <h2 class="text-center mb-4">Danh sách Playlist của bạn</h2>
+
+  {% if playlists %}
+    {% for playlist in playlists %}
+      <div class="playlist-card mb-4 p-3 bg-dark text-light rounded shadow-sm">
+
+        <!-- Header playlist -->
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h5 class="mb-0">{{ playlist.name }}</h5>
+
+          <div class="d-flex align-items-center gap-2">
+            <span class="badge bg-primary">{{ playlist.songs|length }} bài hát</span>
+
+            <!-- Nút XÓA playlist -->
+            <a href="{% url 'delete_playlist' playlist.id %}"
+               class="btn btn-sm btn-danger"
+               onclick="return confirm('Bạn có chắc muốn xóa playlist này không?');">
+              Xóa
+            </a>
+          </div>
+        </div>
+
+        {% if playlist.songs %}
+          <ul class="list-group list-group-flush rounded">
+            {% for song in playlist.songs %}
+              <li class="list-group-item list-group-item-dark d-flex align-items-center gap-3 mb-2 py-2 px-3 rounded song-item">
+
+                {% if song.cover_image %}
+                  <img src="{{ song.cover_image.url }}" alt="{{ song.title }}" class="song-avatar">
                 {% else %}
-                    <div class="card-body">
-                        <p>Playlist này chưa có bài hát nào.</p>
-                    </div>
+                  <img src="{% static 'default_cover.jpg' %}" alt="No cover" class="song-avatar">
                 {% endif %}
-            </div>
-        {% endfor %}
-    {% else %}
-        <p>Bạn chưa có playlist nào. Hãy tạo một playlist mới khi nghe nhạc!</p>
-    {% endif %}
+
+                <div class="flex-grow-1">
+                  <strong class="song-title d-block">{{ song.title }}</strong>
+                  <small class="song-artist d-block mb-1">{{ song.artist }}</small>
+                  <audio controls class="w-100 mt-1">
+                    <source src="{{ song.audio_file.url }}" type="audio/mpeg">
+                    Trình duyệt không hỗ trợ.
+                  </audio>
+                </div>
+              </li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <p class="text-muted mt-2 px-2 py-1 rounded bg-secondary">
+            Chưa có bài hát nào trong playlist này.
+          </p>
+        {% endif %}
+      </div>
+    {% endfor %}
+  {% else %}
+    <p class="text-center text-muted fs-5">
+      Bạn chưa có playlist nào. Hãy tạo playlist để thêm bài hát!
+    </p>
+  {% endif %}
+
 </div>
+
+<style>
+.song-avatar {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.playlist-card {
+  border: 1px solid #444;
+  border-radius: 15px;
+}
+
+.song-item {
+  border-radius: 12px;
+  background-color: #2c2c2c;
+  padding: 0.5rem 0.75rem;
+}
+
+.song-title {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #f8f9fa;
+}
+
+.song-artist {
+  font-size: 0.9rem;
+  color: #dee2e6;
+}
+
+.list-group {
+  border-radius: 12px;
+}
+
+@media (max-width: 576px) {
+  .song-avatar {
+    width: 40px;
+    height: 40px;
+  }
+  .song-title {
+    font-size: 1rem;
+  }
+  .song-artist {
+    font-size: 0.8rem;
+  }
+}
+</style>
 {% endblock %}
